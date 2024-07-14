@@ -1,2 +1,5 @@
 #Ignore secret files
 client_secret.json
+
+#Ignore folders
+ipynb_codes/
