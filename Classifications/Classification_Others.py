@@ -81,6 +81,8 @@
 
 import time
 from Gemini_Models.Subcategory_Classification_Gemini_model import classify_subcategory
+from Gemini_Models.Sentiment_Score_Category_model import classify_sentiment
+import logging
 
 # Dictionary to map from subproducts to products
 product_dict = {
@@ -99,7 +101,7 @@ product_dict = {
     "Others": ["Others"]
 }
 
-def classify_subcategory_batch(texts, batch_size=20, delay_per_batch=12):
+def classify_subcategory_batch(texts, batch_size=10, delay_per_batch=15):
     subcategories = []
     for i in range(0, len(texts), batch_size):
         batch = texts[i:i+batch_size]
@@ -108,6 +110,19 @@ def classify_subcategory_batch(texts, batch_size=20, delay_per_batch=12):
         if i + batch_size < len(texts):  # To avoid sleeping after the last batch
             time.sleep(delay_per_batch)  # Wait before processing the next batch
     return subcategories
+
+logging.basicConfig(level=logging.INFO)
+
+def classify_sentiment_batch(texts, batch_size=10, delay_per_batch=12):
+    sentiments = []
+    for i in range(0, len(texts), batch_size):
+        batch = texts[i:i+batch_size]
+        batch_sentiments = [classify_sentiment(text) for text in batch]
+        sentiments.extend(batch_sentiments)
+        if i + batch_size < len(texts):  
+            logging.info(f"Processed batch {i // batch_size + 1}, sleeping for {delay_per_batch} seconds.")
+            time.sleep(delay_per_batch)
+    return sentiments
 
 def classification_undefined_products(df):
     ###### Classify feedback into subproducts#########
@@ -123,11 +138,12 @@ def classification_undefined_products(df):
     df['Product'] = df['Subcategory'].apply(match_product)
 
     ####categorise into feedback category#############
-    
 
 
-    ######categorise sentiment and score##########
 
+     ## categorise sentiment and score
+    sentiment_results = classify_sentiment_batch(df['Feedback'].tolist())
+    df['Sentiment Score'], df['Sentiment'] = zip(*sentiment_results)
     return df
 
 

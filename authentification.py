@@ -50,5 +50,6 @@ def execute_postgres_query(db_user, db_password, db_name, db_host, query):
 
 def init_vertex_ai():
     # Initialize Vertex AI
-    vertexai.init(project="903333611831", location="asia-southeast1")
+    vertexai.init(project="903333611831", location="asia-southeast1") ##for Subcategory Classification Model
+    vertexai.init(project="jbaaam", location="us-central1") ##for sentiment analysis model
 

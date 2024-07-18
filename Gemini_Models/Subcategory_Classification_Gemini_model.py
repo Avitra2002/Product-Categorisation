@@ -22,34 +22,39 @@ import pandas as pd
 def classify_subcategory(text):
     textsi_1 = """You are a system that helps to categorize customer feedback as input into product categories for a banking company. 
 
-Classify the given text into one of the following categories: Debit Cards, Credit Cards, Personal Loan, Cashline, Education Loan (Tuition Fee Loan), Renovation Loan, Mortgage Loan, Car/Auto Loan, DigiBank App, Internet Banking, Paylah!, Vickers, Unit-Trust, Non-Unit Trust / Equities, digiPortfolio, Treasures Relationship Manager (RM), SSB, VTM, Phone Banking, Coin Deposit Machine, General Insurance, Life Insurance, Payments, DBS Deposit Account, Paynow, Cheque, GIRO, digiVault", DBS Hotline, DBS Branches/Staff, Overseas Transfer, Contact Center, Others, DBS Wealth Planning Manager. 
+Classify the given text into one of the following categories only (exact case sentivity and name and spacing): Debit Card, Credit Card, Personal Loan, Cashline, Education Loan (Tuition Fee Loan), Renovation Loan, Mortgage/Home Loan, Car Loan, DigiBank App, Internet Banking(iBanking), Paylah!, Vickers, Unit-Trust, Non-Unit Trust/Equities, digiPortfolio, Treasures Relationship Manager(RM), SSB, VTM(Video Teller Machine), Phone Banking, Coin Deposit Machine, General Insurance, Life Insurance, Payments, DBS Deposit Account, Paynow, Cheque, GIRO, digiVault, DBS Hotline, DBS Branches/Staff, Overseas Transfer, Contact Center, Others, DBS Wealth Planning Manager, Websites, DBS Treasures (General). 
 
 <INSTRUCTIONS> 
-1. If the text consists of a single word or is a general comment without detailed information about products (e.g., 'Well Done', 'good', 'nil', 'great', 'No Comment', 'Na', '-', '..'), classify it as "Others". 
-2. If the text mentions talking to someone for help or waiting for a response, classify it as "Contact Center". 
-3. If the text mentions 'account','interest rates', 'account opening', 'withdrawal', or 'deposit', classify it as "DBS Deposit Account". Provide only the category name as your answer. 
-4. If the text mentions 'automated machines' or 'ATM', classify it as 'SSB' which is the full form for 'Self-Service Banking'
-5. If the text mentions 'digital banking' or 'app', classify it as 'DigiBank App'
-6. If the text mentions 'trading', classify it as "Vickers"
+1. If the text consists of a single word or is a general comment without detailed information about products (e.g., 'Well Done', 'good', 'nil', 'great', 'No Comment', 'Na', '-', '..'), classify it as Others. 
+2. If the text mentions talking to someone for help or waiting for a response, classify it as Contact Center. 
+3. If the text mentions 'account','interest rates', 'account opening', 'withdrawal', or 'deposit', classify it as DBS Deposit Account. Provide only the category name as your answer. 
+4. If the text mentions 'automated machines' or 'ATM', classify it as 'SSB' which is the full form for Self-Service Banking.
+5. If the text mentions 'digital banking' or 'app', classify it as DigiBank App.
+6. If the text mentions 'trading', classify it as Vickers.
+7. If the text mentions 'video teller machine', classify as VTM.
+8. If the text mentions a RM/staff or receiving help with DBS Treasures, classify it as Treasures Relationship Manager(RM), otherwise classify it as DBS Treasures (General)
 
 Provide only the category name as your answer with no quotations.
 </INSTRUCTIONS> 
 
 <EXAMPLES> 
 <Input>Personally banking interest rates are not as attractive as other banks in Singapore.</Input> 
-<Output>"DBS Deposit Account"</Output> 
+<Output>DBS Deposit Account</Output> 
 <Reason>It talks about banking and its interest rates which are associated with account-related services.</Reason> 
 
+<Input>CM says that coin deposit machine does not give the option to deposit coins.</Input>
+<Output> Coin Deposit Machine </Output>
+
 <Input>nil</Input> 
-<Output>"Others"</Output> 
+<Output>Others</Output> 
 <Reason>It is a general comment without detailed information about products.</Reason> 
 
 <Input>Need help with my account</Input> 
-<Output>"Contact Center"</Output> 
+<Output>Contact Center</Output> 
 <Reason>It mentions needing help, indicating interaction with customer support.</Reason> 
 
-<Input>The app is very poor and dated, even the pin entry keyboard is non standard and buggy. You should really be 100% native like the main banking app. I want a super simple view on how my stocks are performing % and $ based on the original purchase price. I find it really amazing that the only way to make such a fundamental view is with a custom made custom portfolio.</Input> 
-<Output>"Non-Unit Trust / Equities"</Output> 
+<Input>The app is very poor and dated, even the pin entry keyboard is non standard and buggy. You should really be 100% native like the main banking app. I want a super simple view on how my stocks are performing and $ based on the original purchase price. I find it really amazing that the only way to make such a fundamental view is with a custom made custom portfolio.</Input> 
+<Output>Non-Unit Trust/Equities</Output> 
 <Reason>It discusses the performance and management of stocks, which falls under non-unit trust investments.</Reason> 
 </EXAMPLES>""" 
 
