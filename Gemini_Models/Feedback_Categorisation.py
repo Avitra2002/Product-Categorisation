@@ -19,7 +19,7 @@ def feedback_categorisation(text,product):
 
   <INSTRUCTIONS>
   1. First, recognize the product that the feedback is talking about. The feedback will be in the form [product]:feedback.
-  2. Using the product mentioned in the feedback, identify the specific issue being discussed and match it to one of the feedback categories listed below. Ensure the feedback category is relevant to the product.
+  2. Using the product mentioned in the feedback, identify the specific issue being discussed and match it to one of the feedback categories listed below and it must only be from the categories listed below. Ensure the feedback category is relevant to the product.
 
   Here are the products mapped to their associated Feedback Categories: 
   - Debit Card: ['Statement', 'Card Delivery', 'Card Application', 'Card Activation', 'Cashback', 'Rewards', 'Card Replacement', 'Card Renewal', 'Charges/Fees & Interest', 'Card Limit', 'Scam/Fraud', 'Staff related', 'Technical Issue/System', 'T&C', 'Card Blocked']
