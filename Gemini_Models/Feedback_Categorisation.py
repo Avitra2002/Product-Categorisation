@@ -97,10 +97,8 @@ def feedback_categorisation(text,product):
         json_result = response.text
         print(f"Raw model response: {json_result}")
 
-        # Cleaning the JSON string
         clean_json_string = json_result.strip('```json \n').strip()
 
-        # Attempt to load the cleaned JSON string
         data = json.loads(clean_json_string)
         return data.get("feedback_category", "Unknown Category")
   
