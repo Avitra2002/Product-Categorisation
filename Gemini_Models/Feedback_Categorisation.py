@@ -14,7 +14,7 @@ def feedback_categorisation(text,product):
 
 
 
-  textsi_1 = """
+  ttextsi_1 = """
   You are a system that helps to categorise the customer feedbacks into relevant feedback categories associated with the products.
 
   <INSTRUCTIONS>
@@ -60,7 +60,18 @@ def feedback_categorisation(text,product):
   3. Be as specific to the feedback category as you can be. For example, if the feedback is talking about a UI/UX problem, do not categorize it under 'Technical Issue/System'; classify it as 'UI/UX'. If the feedback is about login issues, classify it under 'Log In' instead of 'Technical Issue/System'.
   4. The output is only the feedback category and the reasoning in a VALID JSON format.
 
+  Here is some context for some feedback categories:
+  - Verification Process: This category is dedicated to understanding customer experiences and challenges with the verification process required when contacting customer support via hotlines or doing phone banking. It includes feedback on the requirements to enter sensitive information like National ID or credit card numbers, and the system's response to input errors or delays or more. It refers to anything that requires to verify your details, or identity. Anything with the word verification or verify is it. 
+  - UI/UX: Feedback concerning the design, usability, and functionality of user interfaces across banking services, including ATMs, digital banking apps, and online platforms. This category should capture customer experiences with issues like screen visibility, responsiveness of touch interfaces, and overall ease of navigating through digital and physical banking environments. Any feedback with interface belongs to here. 
+  - IVR: This category collects insights into customer experiences with the Interactive Voice Response (IVR) system during phone banking. Feedback often includes issues with the systems navigation, option selection, timing out during entries, or difficulties in reaching a live agent can also include automated voice issues. This feedback is crucial for identifying pain points in the IVR journey and enhancing user experience.
+  - IVR Menu: This category is focused on gathering customer feedback specifically related to the IVR menu layout, navigation, and functionality. This feedback is essential for identifying usability issues and opportunities for simplification.
+  - Rate/Policy: This category includes the word rate. focuses on gathering customer opinions about the pricing and policy structures of financial and insurance products. It includes feedback on interest rates, insurance premiums, and general policy terms. This information is vital for assessing competitive positioning and customer satisfaction.
+  - Digital Token: Feedback concerning experiences with the use and setup of digital tokens for securing transactions and account access. This category includes customer reports on the process of setting up digital tokens, the reliability and speed of token generation, and general satisfaction or frustration with using digital tokens instead of traditional physical tokens.
+  - Card/Cash Retain Issues: Feedback concerning instances where ATMs retain customers' cards or cash during transactions. This category captures insights into the frequency of these occurrences, the impact on customer convenience, the effectiveness of the resolution process, and overall communication during such events.
+  - CNY: Feedback concerning specific features, promotions, or services offered by the bank in celebration of or to facilitate activities during Chinese New Year or issues with them. This includes experiences with electronic red envelopes (eAng Baos), currency exchange issues during the festival, and any cultural considerations in service delivery.
+  - Hardware: Feedback concerning issues with keypads, card readers, faint ink from printers, and overall ATM machine cleanliness and functionality. 
   </INSTRUCTION>
+
 
   <EXAMPLE>
   <INPUT>
