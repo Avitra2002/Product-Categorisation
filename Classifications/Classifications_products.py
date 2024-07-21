@@ -20,7 +20,7 @@ product_dict = {
     "Self-Service Banking": ["SSB", "VTM(Video Teller Machine)", "Phone Banking", "Coin Deposit Machine"],
     "Insurance": ["General Insurance", "Life Insurance"],
     "Deposits": ["DBS Deposit Account", "Payments", "PayNow", "Cheque", "GIRO", "digiVault"],
-    "Contact Center": ["DBS Hotline", "DBS Branches/Staff"],
+    "Contact Center": ["DBS Hotline", "DBS Branches/Staff","Contact Center"],
     "Webpages": ["Websites"],
     "Remittance": ["Overseas Transfer"],
     "Others": ["Others"]

@@ -15,7 +15,7 @@ def feedback_categorisation(text,product):
 
 
   textsi_1 = """
-  You are a system that helps to categorise the customer feedbacks into relevant feedback categories associated with the products.
+  You are a system that helps to categorise the customer feedbacks into the most relevant feedback category associated with the products. The output must only contain one feedback category
 
   <INSTRUCTIONS>
   1. First, recognize the product that the feedback is talking about. The feedback will be in the form [product]:feedback.
@@ -45,7 +45,7 @@ def feedback_categorisation(text,product):
   - Overseas Transfer: ['Exchange Rates/Fee related', 'Scam/Fraud', 'Process', 'Rewards', 'Transaction Related', 'Features', 'Technical Issues/System','UI/UX', 'Application']
   - Digibank App: ['Log In', 'Log Out', 'Technical/System Issue', 'Process Related', 'Digital Token', 'OTP', 'Account Opening', 'Features','Bill statement','Transaction related' ,  'Charges/Fee & Interest', 'Advertisement', 'Others', 'Lag/Intermittent Logout']
   - Internet Banking(iBanking): ['Log In', 'Log Out', 'Technical/System Issue', 'Process Related', 'Digital Token', 'OTP', 'Account Opening', 'Features', 'Charges/Fee & Interest', 'Advertisement', 'Others', 'Transaction related' ,'Lag/Intermittent Logout']
-  - Paylah!: ['Log In', 'Log Out', 'Technical/System Issue', 'Digital token', 'OTP','Features','Wallet Closure','Transaction Related','Marketing & promotions','Process related','UI/UX','CNY','Staff related','Account opening','Account closure','Account management', 'advertisement']
+  - Paylah!: ['Log In', 'Log Out', 'Technical/System Issue', 'Digital token', 'OTP','Features','Wallet Closure','Transaction Related','Marketing & promotions','Process related','UI/UX','CNY','Staff related','Account opening','Account closure','Account management', 'Advertisement']
   - Vickers: ['Fee related', 'Technical/System Issue','Process related','Application', 'Digibot','Equity trading' ,'Statement','Rewards','Others','Features','OTP','UI/UX']
   - Unit Trust: ['Charges/Fees & Interest','Technical/System Issue','Process related','Application','Digibot','Equity trading','Statement','Rewards','Features','Saving/Investment Plans']
   - Non-Unit Trust/Equities: ['Charges/Fees & Interest', 'Technical/System Issue', 'Process related', 'Application', 'Digibot','Online Equity Trading','Statement','Rewards','Features','Saving/Investment Plans']
@@ -58,7 +58,7 @@ def feedback_categorisation(text,product):
   - DBS Treasures (General):['Charges/Fees & Interest', 'Technical/System Issue', 'Process related', 'Application', 'Digibot','Online Equity Trading','Statement','Rewards','Features','Saving/Investment Plans']
   - DBS Wealth Planning Manager:['Charges/Fees & Interest', 'Process related', 'Staff related']
   3. Be as specific to the feedback category as you can be. For example, if the feedback is talking about a UI/UX problem, do not categorize it under 'Technical Issue/System'; classify it as 'UI/UX'. If the feedback is about login issues, classify it under 'Log In' instead of 'Technical Issue/System'.
-  4. The output is only the feedback category in a VALID JSON format.
+  4. The output is only the feedback category (DO NOT GIVE ANY REASONING).
 
   Here is some context for some feedback categories:
   - Verification Process: This category is dedicated to understanding customer experiences and challenges with the verification process required when contacting customer support via hotlines or doing phone banking. It includes feedback on the requirements to enter sensitive information like National ID or credit card numbers, and the system's response to input errors or delays or more. It refers to anything that requires to verify your details, or identity. Anything with the word verification or verify is it. 
@@ -70,6 +70,7 @@ def feedback_categorisation(text,product):
   - Card/Cash Retain Issues: Feedback concerning instances where ATMs retain customers' cards or cash during transactions. This category captures insights into the frequency of these occurrences, the impact on customer convenience, the effectiveness of the resolution process, and overall communication during such events.
   - CNY: Feedback concerning specific features, promotions, or services offered by the bank in celebration of or to facilitate activities during Chinese New Year or issues with them. This includes experiences with electronic red envelopes (eAng Baos), currency exchange issues during the festival, and any cultural considerations in service delivery.
   - Hardware: Feedback concerning issues with keypads, card readers, faint ink from printers, and overall ATM machine cleanliness and functionality. 
+  - Others: If the feedbacks are very general and you feel like you need more context to understand, classify it as Others
   </INSTRUCTION>
 
 
@@ -78,17 +79,18 @@ def feedback_categorisation(text,product):
   "Digibank App: Unable to update my mail addresses because system doesn't allow me to key in numbers. So how am I suppose to key in house numbers or postcode??"
   </INPUT>
   <OUTPUT>
-  {"feedback_category": "Technical/System Issue","Reasoning": "The feedback indicates a problem with the Digibank App's functionality, specifically a system error that prevents the user from entering numbers, which is a technical issue."}
+  Technical/System Issue
   </OUTPUT>
 
   <INPUT>
   "PayLah!:so many ads blocking the screen."
   </INPUT>
   <OUTPUT>
-  {"feedback_category":"advertisement", "Reasoning": "The feedback highlights an issue with the PayLah! app where ads are obstructing the user experience, which relates to advertisements."}
+  Advertisement
   </OUTPUT>
 
-  <INPUT
+  <INPUT>The above question should allow us to choose more options instead of one option </INPUT>
+  <OUTPUT> Others </OUTPUT>
 
   </EXAMPLE>
   """
@@ -97,8 +99,8 @@ def feedback_categorisation(text,product):
   model = GenerativeModel(model_name="gemini-1.0-pro-002", system_instruction=textsi_1)
   generation_config = GenerationConfig(
     temperature=0.3,  # Lower temperature for more deterministic output
-    top_p=0.9,
-    top_k=2,
+    top_p=1,
+    top_k=1,
     candidate_count=1,
     max_output_tokens=1024,  # Set a higher limit for more detailed responses
   )
@@ -108,14 +110,16 @@ def feedback_categorisation(text,product):
         json_result = response.text
         print(f"Raw model response: {json_result}")
 
-        clean_json_string = json_result.strip('```json \n').strip()
+        return json_result
 
-        data = json.loads(clean_json_string)
-        return data.get("feedback_category", "Unknown Category")
+        # clean_json_string = json_result.strip('```json \n').strip()
+
+        # data = json.loads(clean_json_string)
+        # return data.get("feedback_category", "Unknown Category")
   
-  except json.JSONDecodeError as e:
-        print(f"JSON decode error for feedback: {text}, product: {product}, response: {json_result}")
-        return "Others"
+  # except json.JSONDecodeError as e:
+  #       print(f"JSON decode error for feedback: {text}, product: {product}, response: {json_result}")
+  #       return "Others"
   except Exception as e:
         print(f"Unexpected error for feedback: {text}, product: {product}, error: {e}")
         return "Others"

@@ -99,7 +99,10 @@ def process_survey_data(product, source, file_path):
     for col in data.columns:
         if col.startswith('Q'):
             question_text = question_texts[col]
-            data[col] = data[col].apply(lambda x: f"{product}: {question_text}: {x}" if pd.notna(x) else x)
+            if product != "Others":
+                data[col] = data[col].apply(lambda x: f"{product} {question_text}: {x}" if pd.notna(x) else x)
+            else:
+                data[col] = data[col].apply(lambda x: f"{question_text}: {x}" if pd.notna(x) else x)
             # cloud_logger.info(f"Appended question text to column: {col}")
 
     data.dropna(axis=1, how='all', inplace=True)
