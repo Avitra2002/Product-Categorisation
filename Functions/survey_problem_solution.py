@@ -17,6 +17,7 @@ from google.cloud.logging.handlers import CloudLoggingHandler
 from Classifications.Classifications_products import classification_defined_products
 from Classifications.Classification_Others import classification_undefined_products
 import logging
+import re
 
 # Initialize Cloud Logging
 # client = google.cloud.logging.Client()
@@ -56,8 +57,9 @@ def process_survey_data(product, source, file_path):
     for col in data.columns:
         if 'date' in col.lower() or data[col].apply(lambda x: isinstance(x, str) and '/' in x).all():
             date_column = col
-            data[col] = data[col].apply(format_date)
             cloud_logger.info(f"Date column identified: {col}")
+            data[col] = data[col].apply(format_date)
+            
             break
 
     if not date_column:
@@ -67,19 +69,22 @@ def process_survey_data(product, source, file_path):
 
     columns_to_drop = []
     for col in data.columns:
-        if not (col.startswith('Q') and col[1:].isdigit()):
+        if not (re.match(r'Q\d+[a-zA-Z]*$', col)):
             if col != date_column:
                 columns_to_drop.append(col)
         else:
             if "NPS" in col or "rating" in col.lower() or "scale" in col.lower():
                 columns_to_drop.append(col)
-            elif pd.to_numeric(data[col][1:], errors='coerce').notna().all():
+            elif pd.to_numeric(data[col][3:], errors='coerce').notna().all():
                 columns_to_drop.append(col)
-            elif data[col][1:].str.strip().str.lower().isin(['yes', 'no']).all():
+            elif data[col][3:].str.strip().str.lower().isin(['yes', 'no']).all():
                 columns_to_drop.append(col)
 
     data.drop(columns=columns_to_drop, inplace=True)
-    # cloud_logger.info(f"Dropped columns: {columns_to_drop}")
+    cloud_logger.info(f"Dropped columns: {columns_to_drop}")
+
+    if date_column:
+        date_series = data[date_column].copy()
 
     data = data[1:]
 
@@ -94,19 +99,22 @@ def process_survey_data(product, source, file_path):
     for col in data.columns:
         if col.startswith('Q'):
             question_text = question_texts[col]
-            data[col] = data[col].apply(lambda x: f"{source}: {question_text}: {x}" if pd.notna(x) else x)
+            data[col] = data[col].apply(lambda x: f"{product}: {question_text}: {x}" if pd.notna(x) else x)
             # cloud_logger.info(f"Appended question text to column: {col}")
 
     data.dropna(axis=1, how='all', inplace=True)
     # cloud_logger.info("Dropped columns with all NaN values.")
 
-    long_format_data = data.melt(var_name='Question Code', value_name='Feedback')
+    if date_column:
+        data['Date'] = date_series
+
+    long_format_data = data.melt(id_vars=['Date'], var_name='Question Code', value_name='Feedback')
     long_format_data = long_format_data.dropna(subset=['Feedback'])
     # cloud_logger.info("Converted data to long format and filtered out rows with NaN feedback.")
 
     if product != "Others":
-        long_format_data['Product'] = product
-        long_format_data['Subcategory'] = None
+        long_format_data['Product'] = None
+        long_format_data['Subcategory'] = product
         long_format_data['Feedback Category'] = ''
         long_format_data['Sentiment'] = None
         long_format_data['Sentiment Score'] = None
@@ -128,13 +136,10 @@ def process_survey_data(product, source, file_path):
         #TODO: Classification
         long_format_data=classification_undefined_products(long_format_data)
 
-    if date_column:
-        long_format_data['Date'] = data[date_column].values
-
     desired_columns = ['Date', 'Feedback', 'Product', 'Subcategory', 'Feedback Category', 'Sentiment', 'Sentiment Score', 'Source']
     long_format_data = long_format_data.reindex(columns=desired_columns)
 
-    return data
+    return long_format_data
 
     #TODO: Add to SQL Analytics
 

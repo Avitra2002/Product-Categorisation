@@ -102,7 +102,7 @@ product_dict = {
     "Others": ["Others"]
 }
 
-def classify_subcategory_batch(texts, batch_size=10, delay_per_batch=15):
+def classify_subcategory_batch(texts, batch_size=30, delay_per_batch=15):
     subcategories = []
     for i in range(0, len(texts), batch_size):
         batch = texts[i:i+batch_size]
@@ -114,7 +114,7 @@ def classify_subcategory_batch(texts, batch_size=10, delay_per_batch=15):
 
 logging.basicConfig(level=logging.INFO)
 
-def classify_sentiment_batch(texts, batch_size=10, delay_per_batch=12):
+def classify_sentiment_batch(texts, batch_size=30, delay_per_batch=12):
     sentiments = []
     for i in range(0, len(texts), batch_size):
         batch = texts[i:i+batch_size]
@@ -125,7 +125,7 @@ def classify_sentiment_batch(texts, batch_size=10, delay_per_batch=12):
             time.sleep(delay_per_batch)
     return sentiments
 
-def classify_feedback_batch(feedbacks, products, batch_size=10, delay_per_batch=15):
+def classify_feedback_batch(feedbacks, products, batch_size=30, delay_per_batch=15):
     categories = []
     for i in range(0, len(feedbacks), batch_size):
         batch_feedbacks = feedbacks[i:i+batch_size]

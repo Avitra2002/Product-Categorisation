@@ -55,7 +55,7 @@ def process_data(event,context):
     
     # Download the file from Google Cloud Storage
     # local_file_path = download_file_from_bucket(storage_bucket_name, file_name)
-    local_file_path='/Users/phonavitra/Desktop/term 5/Service Studio/Test/Others__Social Media__Cloud_function_test.csv'
+    local_file_path='/Users/phonavitra/Desktop/term 5/Service Studio/Test/Car Loan__Product Survey__new data.csv'
     product, source=parse_filename(local_file_path)
 
     # df = pd.read_csv(local_file_path)
@@ -81,7 +81,7 @@ def process_data(event,context):
     # os.remove(local_file_path)
 
     # return "Data processing and storage complete"
-    output_file_path = f'/Users/phonavitra/Desktop/term 5/Service Studio/Test/Cloud_function_result.csv'
+    output_file_path = f'/Users/phonavitra/Desktop/term 5/Service Studio/Test/Model Results (All sources)/Car_loan Results.csv'
     try:
         data.to_csv(output_file_path, index=False)
         print(f"Data transformation complete. File saved to: {output_file_path}")

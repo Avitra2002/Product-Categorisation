@@ -14,7 +14,7 @@ def feedback_categorisation(text,product):
 
 
 
-  ttextsi_1 = """
+  textsi_1 = """
   You are a system that helps to categorise the customer feedbacks into relevant feedback categories associated with the products.
 
   <INSTRUCTIONS>
@@ -58,7 +58,7 @@ def feedback_categorisation(text,product):
   - DBS Treasures (General):['Charges/Fees & Interest', 'Technical/System Issue', 'Process related', 'Application', 'Digibot','Online Equity Trading','Statement','Rewards','Features','Saving/Investment Plans']
   - DBS Wealth Planning Manager:['Charges/Fees & Interest', 'Process related', 'Staff related']
   3. Be as specific to the feedback category as you can be. For example, if the feedback is talking about a UI/UX problem, do not categorize it under 'Technical Issue/System'; classify it as 'UI/UX'. If the feedback is about login issues, classify it under 'Log In' instead of 'Technical Issue/System'.
-  4. The output is only the feedback category and the reasoning in a VALID JSON format.
+  4. The output is only the feedback category in a VALID JSON format.
 
   Here is some context for some feedback categories:
   - Verification Process: This category is dedicated to understanding customer experiences and challenges with the verification process required when contacting customer support via hotlines or doing phone banking. It includes feedback on the requirements to enter sensitive information like National ID or credit card numbers, and the system's response to input errors or delays or more. It refers to anything that requires to verify your details, or identity. Anything with the word verification or verify is it. 
@@ -115,9 +115,9 @@ def feedback_categorisation(text,product):
   
   except json.JSONDecodeError as e:
         print(f"JSON decode error for feedback: {text}, product: {product}, response: {json_result}")
-        return "Unknown Category"
+        return "Others"
   except Exception as e:
         print(f"Unexpected error for feedback: {text}, product: {product}, error: {e}")
-        return "Unknown Category"
+        return "Others"
 
 

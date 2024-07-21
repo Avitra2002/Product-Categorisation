@@ -10,7 +10,23 @@ from Gemini_Models.Sentiment_Score_Category_model import classify_sentiment
 import time
 from Gemini_Models.Feedback_Categorisation import feedback_categorisation
 
-def classify_subcategory_batch(texts, batch_size=20, delay_per_batch=12):
+product_dict = {
+    "Cards": ["Debit Card", "Credit Card"],
+    "Unsecured Loans": ["Cashline", "Personal Loan", "Renovation Loan", "Education Loan"],
+    "Secured Loans": ["Car Loan", "Mortgage/Home Loan"],
+    "Digital Channels": ["DigiBank App", "Internet Banking(iBanking)", "Paylah!"],
+    "Investments": ["digiPortfolio", "Non-Unit Trust/Equities", "Unit Trust", "Vickers"],
+    "DBS Treasures": ["Treasures Relationship Manager(RM)", "DBS Wealth Planning Manager", "DBS Treasures (General)"],
+    "Self-Service Banking": ["SSB", "VTM(Video Teller Machine)", "Phone Banking", "Coin Deposit Machine"],
+    "Insurance": ["General Insurance", "Life Insurance"],
+    "Deposits": ["DBS Deposit Account", "Payments", "PayNow", "Cheque", "GIRO", "digiVault"],
+    "Contact Center": ["DBS Hotline", "DBS Branches/Staff"],
+    "Webpages": ["Websites"],
+    "Remittance": ["Overseas Transfer"],
+    "Others": ["Others"]
+}
+
+def classify_subcategory_batch(texts, batch_size=30, delay_per_batch=12):
     subcategories = []
     for i in range(0, len(texts), batch_size):
         batch = texts[i:i+batch_size]
@@ -20,7 +36,7 @@ def classify_subcategory_batch(texts, batch_size=20, delay_per_batch=12):
             time.sleep(delay_per_batch)  # Wait before processing the next batch
     return subcategories
 
-def classify_sentiment_batch(texts, batch_size=20, delay_per_batch=12):
+def classify_sentiment_batch(texts, batch_size=30, delay_per_batch=12):
     sentiments = []
     for i in range(0, len(texts), batch_size):
         batch = texts[i:i+batch_size]
@@ -30,7 +46,7 @@ def classify_sentiment_batch(texts, batch_size=20, delay_per_batch=12):
             time.sleep(delay_per_batch)
     return sentiments
 
-def classify_feedback_batch(feedbacks, products, batch_size=10, delay_per_batch=15):
+def classify_feedback_batch(feedbacks, products, batch_size=30, delay_per_batch=15):
     categories = []
     for i in range(0, len(feedbacks), batch_size):
         batch_feedbacks = feedbacks[i:i+batch_size]
@@ -45,6 +61,17 @@ def classification_defined_products(df):
 
     ##categorise into subproducts
     df['Subcategory'] = classify_subcategory_batch(df['Feedback'].tolist())
+
+    # Link subproducts to products
+    def match_product(subcategory):
+        for product, subproducts in product_dict.items():
+            if subcategory in subproducts:
+                return product
+        return 'Others'  # Return 'Others' if subcategory doesn't match any product
+    
+    df['Product'] = df['Subcategory'].apply(match_product)
+
+    print('Completed: Subcategory Categorisation')
 
     ##categorise into feedback sentiment
     df['Feedback Category'] = classify_feedback_batch(df['Feedback'].tolist(), df['Subcategory'].tolist())
