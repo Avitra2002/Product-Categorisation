@@ -59,6 +59,8 @@ def process_social_media_data(file_path, product, source):
             data[col] = data[col].apply(format_date)
             cloud_logger.info(f"Date column identified and formatted: {col}")
             break
+    if date_column:
+        data.rename(columns={date_column: 'Date'}, inplace=True)
 
     if not date_column:
         cloud_logger.warning("No date column identified.")
@@ -72,6 +74,7 @@ def process_social_media_data(file_path, product, source):
 
     if feedback_column:
         data = data[data[feedback_column].apply(lambda x: pd.notna(x) and is_english(x) and is_valid_feedback(x))]
+        data.rename(columns={feedback_column: 'Feedback'}, inplace=True)
     else:
         cloud_logger.warning("No feedback column identified.")
         raise ValueError("Feedback column is required for processing.")
@@ -83,7 +86,7 @@ def process_social_media_data(file_path, product, source):
         data['Sentiment'] = None
         data['Sentiment Score'] = None
         data['Source'] = source
-        cloud_logger.info(f"Data identified: {data}")
+        # cloud_logger.info(f"Data identified: {data}")
 
         #TODO: Classification
         data= classification_defined_products(data)
@@ -95,18 +98,16 @@ def process_social_media_data(file_path, product, source):
         data['Sentiment'] = None
         data['Sentiment Score'] = None
         data['Source'] = source
-        cloud_logger.info(f"Data identified: {data}")
+        # cloud_logger.info(f"Data identified: {data}")
 
         #TODO: Classification
         data = classification_undefined_products(data)
 
     desired_columns = ['Date', 'Feedback', 'Product', 'Subcategory', 'Feedback Category', 'Sentiment', 'Sentiment Score', 'Source']
 
-    if feedback_column:
-        data.rename(columns={feedback_column: 'Feedback'}, inplace=True)
+    # if feedback_column:
+    #     data.rename(columns={feedback_column: 'Feedback'}, inplace=True)
     
-    if date_column:
-        data.rename(columns={date_column: 'Date'}, inplace=True)
 
     data = data.reindex(columns=desired_columns)
 
