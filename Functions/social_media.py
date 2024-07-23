@@ -45,12 +45,19 @@ cloud_logger.addHandler(console_handler)
 # file_path= '/Users/phonavitra/Desktop/term 5/Service Studio/Test/Others__Social Media__Cloud_function_test.csv'
 
 def process_social_media_data(file_path, product, source):
-    ##TODO: Change file to csv
+    
     try:
-        data = pd.read_csv(file_path)
-        cloud_logger.info("Data loaded successfully social media.")
+        # Load data from Excel or CSV
+        if file_path.lower().endswith('.xls') or file_path.lower().endswith('.xlsx'):
+            data = pd.read_excel(file_path)
+            cloud_logger.info(f"Excel data loaded successfully from {file_path}.")
+        elif file_path.lower().endswith('.csv'):
+            data = pd.read_csv(file_path)
+            cloud_logger.info(f"CSV data loaded successfully from {file_path}.")
+        else:
+            raise ValueError(f"Unsupported file format for {file_path}. Only Excel (.xls, .xlsx) and CSV (.csv) files are supported.")
     except Exception as e:
-        cloud_logger.error(f"Error loading data: {e}")
+        cloud_logger.error(f"Error processing {file_path}: {e}")
         raise
 
     date_column = None

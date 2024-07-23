@@ -110,7 +110,7 @@ Follow these specific instructions to process the text:
                 stream=False,
             )
             json_data = responses.text
-            print(json_data)
+            # print(json_data)
             clean_json_string = json_data.strip('```json \n')
             data = json.loads(clean_json_string)
 

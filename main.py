@@ -106,7 +106,7 @@ def process_data(event,context):
 
     print("Script ended")
 
-process_data(None,None)
+# process_data(None,None)
 
 
 # In[ ]:

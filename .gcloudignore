@@ -12,6 +12,14 @@
 # below:
 .git
 .gitignore
+ipynb_codes/
+Training/
+Actionables.ipynb
+Feedback-Categorisation.ipynb
+Feedback-Categorisation2.ipynb
+README.md
+
+
 
 node_modules
 #!include:.gitignore
