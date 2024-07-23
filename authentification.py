@@ -1,6 +1,8 @@
 from google.cloud import secretmanager_v1beta1
 from google.cloud import storage
+from psycopg2 import sql, extras
 import psycopg2
+
 import os
 import vertexai
 
@@ -22,31 +24,35 @@ def download_file_from_bucket(bucket_name, file_name):
     return temp_local_file
 
 # Function to connect to PostgreSQL and execute queries
-def execute_postgres_query(db_user, db_password, db_name, db_host, query):
+def execute_postgres_query(db_user, db_password, db_name, db_host, query, data=None):
     conn = psycopg2.connect(
         dbname=db_name,
         user=db_user,
         password=db_password,
-        host='/cloudsql/jbaaam:asia-southeast1:feedback'
+        db_host='/cloudsql/jbaaam:asia-southeast1:feedback'
     )
     cursor = conn.cursor()
-    cursor.execute(query)
+    if data:
+        extras.execute_values(cursor, query, data)
+    else:
+        cursor.execute(query)
     conn.commit()
     cursor.close()
     conn.close()
 
-def execute_postgres_query(db_user, db_password, db_name, db_host, query):
-    conn = psycopg2.connect(
-        dbname=db_name,
-        user=db_user,
-        password=db_password,
-        host=db_host
-    )
-    cursor = conn.cursor()
-    cursor.execute(query)
-    conn.commit()
-    cursor.close()
-    conn.close()
+
+# def execute_postgres_query(db_user, db_password, db_name, db_host, query):
+#     conn = psycopg2.connect(
+#         dbname=db_name,
+#         user=db_user,
+#         password=db_password,
+#         host=db_host
+#     )
+#     cursor = conn.cursor()
+#     cursor.execute(query)
+#     conn.commit()
+#     cursor.close()
+#     conn.close()
 
 def init_vertex_ai():
     # Initialize Vertex AI

@@ -19,26 +19,26 @@ from Classifications.Classification_Others import classification_undefined_produ
 import logging 
 
 # Initialize Cloud Logging
-# client = google.cloud.logging.Client()
-# handler = CloudLoggingHandler(client)
-# cloud_logger = logging.getLogger('cloudLogger')
-# cloud_logger.setLevel(logging.DEBUG)
-# cloud_logger.addHandler(handler)
+client = google.cloud.logging.Client()
+handler = CloudLoggingHandler(client)
+cloud_logger = logging.getLogger('cloudLogger')
+cloud_logger.setLevel(logging.DEBUG)
+cloud_logger.addHandler(handler)
 
 #### FOR LOCAL TEST######
-cloud_logger = logging.getLogger('cloudLogger')
-cloud_logger.setLevel(logging.DEBUG)  # Set the logging level to DEBUG
+# cloud_logger = logging.getLogger('cloudLogger')
+# cloud_logger.setLevel(logging.DEBUG)  # Set the logging level to DEBUG
 
-# Create a console handler and set its log level
-console_handler = logging.StreamHandler()
-console_handler.setLevel(logging.DEBUG)  # Set the console handler level to DEBUG
+# # Create a console handler and set its log level
+# console_handler = logging.StreamHandler()
+# console_handler.setLevel(logging.DEBUG)  # Set the console handler level to DEBUG
 
-# Define the log format
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-console_handler.setFormatter(formatter)
+# # Define the log format
+# formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+# console_handler.setFormatter(formatter)
 
-# Add the console handler to the logger
-cloud_logger.addHandler(console_handler)
+# # Add the console handler to the logger
+# cloud_logger.addHandler(console_handler)
 
 #### FOR LOCAL TEST######
 

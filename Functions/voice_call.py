@@ -18,28 +18,28 @@ from Classifications.Classifications_products import classification_defined_prod
 from Classifications.Classification_Others import classification_undefined_products
 
 # Initialize Cloud Logging
-# client = google.cloud.logging.Client()
-# handler = CloudLoggingHandler(client)
-# cloud_logger = logging.getLogger('cloudLogger')
-# cloud_logger.setLevel(logging.DEBUG)
-# cloud_logger.addHandler(handler)
-
-#### FOR LOCAL TEST######
+client = google.cloud.logging.Client()
+handler = CloudLoggingHandler(client)
 cloud_logger = logging.getLogger('cloudLogger')
-cloud_logger.setLevel(logging.DEBUG)  # Set the logging level to DEBUG
+cloud_logger.setLevel(logging.DEBUG)
+cloud_logger.addHandler(handler)
 
-# Create a console handler and set its log level
-console_handler = logging.StreamHandler()
-console_handler.setLevel(logging.DEBUG)  # Set the console handler level to DEBUG
+# #### FOR LOCAL TEST######
+# cloud_logger = logging.getLogger('cloudLogger')
+# cloud_logger.setLevel(logging.DEBUG)  # Set the logging level to DEBUG
 
-# Define the log format
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-console_handler.setFormatter(formatter)
+# # Create a console handler and set its log level
+# console_handler = logging.StreamHandler()
+# console_handler.setLevel(logging.DEBUG)  # Set the console handler level to DEBUG
 
-# Add the console handler to the logger
-cloud_logger.addHandler(console_handler)
+# # Define the log format
+# formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+# console_handler.setFormatter(formatter)
 
-#### FOR LOCAL TEST######
+# # Add the console handler to the logger
+# cloud_logger.addHandler(console_handler)
+
+# #### FOR LOCAL TEST######
 
 def process_voice_call_data(file_path, product, source):
     try:

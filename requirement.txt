@@ -1,4 +1,0 @@
-pandas
-langdetect
-google-cloud-logging
-psycopg2

@@ -20,11 +20,11 @@ import logging
 import re
 
 # Initialize Cloud Logging
-# client = google.cloud.logging.Client()
-# handler = CloudLoggingHandler(client)
-# cloud_logger = logging.getLogger('cloudLogger')
-# cloud_logger.setLevel(logging.DEBUG)
-# cloud_logger.addHandler(handler)
+client = google.cloud.logging.Client()
+handler = CloudLoggingHandler(client)
+cloud_logger = logging.getLogger('cloudLogger')
+cloud_logger.setLevel(logging.DEBUG)
+cloud_logger.addHandler(handler)
 
 #### FOR LOCAL TEST######
 cloud_logger = logging.getLogger('cloudLogger')

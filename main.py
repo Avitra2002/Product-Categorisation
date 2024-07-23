@@ -39,23 +39,23 @@ def process_data(event,context):
     print("Script started")
     init_vertex_ai()
 
-    # project_id = '903333611831'
+    project_id = '903333611831'
     
-    # db_user_secret_id = 'DB_USER'
-    # db_password_secret_id = 'DB_PASS'
-    # storage_bucket_name = 'jbaaam_upload'
+    db_user_secret_id = 'DB_USER'
+    db_password_secret_id = 'DB_PASS'
+    storage_bucket_name = 'jbaaam_upload'
     
-    # # Retrieve secrets
-    # db_user = access_secret_version(db_user_secret_id, project_id)
-    # db_password = access_secret_version(db_password_secret_id, project_id)
+    # Retrieve secrets
+    db_user = access_secret_version(db_user_secret_id, project_id)
+    db_password = access_secret_version(db_password_secret_id, project_id)
 
-    # ##Get info from trigger in bucket
-    # bucket_name = event['bucket']
-    # file_name = event['name']
+    ##Get info from trigger in bucket
+    bucket_name = event['bucket']
+    file_name = event['name']
     
     # Download the file from Google Cloud Storage
-    # local_file_path = download_file_from_bucket(storage_bucket_name, file_name)
-    local_file_path='/Users/phonavitra/Desktop/term 5/Service Studio/Test/Others__Social Media__smalltest.csv'
+    local_file_path = download_file_from_bucket(storage_bucket_name, file_name)
+    # local_file_path='/Users/phonavitra/Desktop/term 5/Service Studio/Test/Others__Social Media__smalltest.csv'
     product, source=parse_filename(local_file_path)
 
     # df = pd.read_csv(local_file_path)
@@ -74,20 +74,35 @@ def process_data(event,context):
 
 
     # Insert processed data into PostgreSQL
-    # query = f"INSERT INTO your_table (column1, column2) VALUES ('value1', 'value2')"
-    # execute_postgres_query(db_user, db_password, 'your_db_name', 'your_db_host', query)
+    # Prepare the data for insertion
+    data_to_insert = [
+    (
+        row['Date'], 
+        row['Feedback'], 
+        row['Product'], 
+        row['Subcategory'], 
+        row['Feedback Category'], 
+        row['Sentiment'], 
+        row['Sentiment Score'], 
+        row['Source']
+    )
+    for row in data
+    ]
+
+    query = """INSERT INTO test_dataprocessing (date, feedback, product, subcategory, feedback_category, sentiment, sentiment_score, sourc) VALUES %s"""
+    execute_postgres_query(db_user, db_password, 'feedback_db', '/cloudsql/jbaaam:asia-southeast1:feedback', query)
     
-    # # Delete the temporary file
-    # os.remove(local_file_path)
+    # Delete the temporary file
+    os.remove(local_file_path)
 
     # return "Data processing and storage complete"
-    output_file_path = f'/Users/phonavitra/Desktop/term 5/Service Studio/Test/Model Results (All sources)/Social Media_Results.csv'
-    try:
-        data.to_csv(output_file_path, index=False)
-        print(f"Data transformation complete. File saved to: {output_file_path}")
-    except Exception as e:
-        print(f"Error saving transformed data: {e}")
-        raise
+    # output_file_path = f'/Users/phonavitra/Desktop/term 5/Service Studio/Test/Model Results (All sources)/Social Media_Results.csv'
+    # try:
+    #     data.to_csv(output_file_path, index=False)
+    #     print(f"Data transformation complete. File saved to: {output_file_path}")
+    # except Exception as e:
+    #     print(f"Error saving transformed data: {e}")
+    #     raise
 
     print("Script ended")
 

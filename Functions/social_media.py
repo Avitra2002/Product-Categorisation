@@ -45,6 +45,7 @@ cloud_logger.addHandler(console_handler)
 # file_path= '/Users/phonavitra/Desktop/term 5/Service Studio/Test/Others__Social Media__Cloud_function_test.csv'
 
 def process_social_media_data(file_path, product, source):
+    ##TODO: Change file to csv
     try:
         data = pd.read_csv(file_path)
         cloud_logger.info("Data loaded successfully social media.")
