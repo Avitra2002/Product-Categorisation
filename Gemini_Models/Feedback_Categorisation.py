@@ -108,7 +108,7 @@ def feedback_categorisation(text,product):
         # Assuming the function call to the model and parameters stays the same:
         response = model.generate_content(f'{product}:{text}')
         json_result = response.text
-        print(f"Raw model response: {json_result}")
+        # print(f"Raw model response: {json_result}")
 
         return json_result
 
