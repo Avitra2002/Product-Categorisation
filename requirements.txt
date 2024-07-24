@@ -8,3 +8,10 @@ gcloud==0.18.3
 cloudpathlib==0.18.1
 aiosqlite==0.19.0
 psycopg2==2.9.9
+google-cloud-secret-manager
+google-cloud-storage
+psycopg2-binary
+google-cloud-logging
+google-cloud-aiplatform
+google-cloud-pubsub
+pytz

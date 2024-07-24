@@ -18,6 +18,7 @@ from Classifications.Classifications_products import classification_defined_prod
 from Classifications.Classification_Others import classification_undefined_products
 import logging
 import re
+from pubsub_helper import publish_message
 
 # Initialize Cloud Logging
 client = google.cloud.logging.Client()
@@ -57,6 +58,7 @@ def process_survey_data(product, source, file_path):
         else:
             raise ValueError(f"Unsupported file format for {file_path}. Only Excel (.xls, .xlsx) and CSV (.csv) files are supported.")
     except Exception as e:
+        publish_message("Error processing {file_path}: {e}")
         cloud_logger.error(f"Error processing {file_path}: {e}")
         raise
 
@@ -70,6 +72,7 @@ def process_survey_data(product, source, file_path):
             break
 
     if not date_column:
+        publish_message("Error: No date column identified. Date column is needed for processing")
         cloud_logger.warning("No date column identified.")
 
     question_texts = data.iloc[0]
@@ -150,15 +153,5 @@ def process_survey_data(product, source, file_path):
     long_format_data = long_format_data.reindex(columns=desired_columns)
 
     return long_format_data
-
-    #TODO: Add to SQL Analytics
-
-    # output_file_path = f'/path/to/output/Transformed_{product}_{source}.csv'
-    # try:
-    #     long_format_data.to_csv(output_file_path, index=False)
-    #     cloud_logger.info(f"Data transformation complete. File saved to: {output_file_path}")
-    # except Exception as e:
-    #     cloud_logger.error(f"Error saving transformed data: {e}")
-    #     raise
         
 

@@ -16,6 +16,7 @@ import google.cloud.logging
 from google.cloud.logging.handlers import CloudLoggingHandler
 from Classifications.Classifications_products import classification_defined_products
 from Classifications.Classification_Others import classification_undefined_products
+from pubsub_helper import publish_message
 
 # Initialize Cloud Logging
 client = google.cloud.logging.Client()
@@ -51,8 +52,10 @@ def process_voice_call_data(file_path, product, source):
             data = pd.read_csv(file_path)
             cloud_logger.info(f"CSV data loaded successfully from {file_path}.")
         else:
+            publish_message(f"Unsupported file format for {file_path}. Only Excel (.xls, .xlsx) and CSV (.csv) files are supported.")
             raise ValueError(f"Unsupported file format for {file_path}. Only Excel (.xls, .xlsx) and CSV (.csv) files are supported.")
     except Exception as e:
+        publish_message(f"Error processing {file_path}: {e}")
         cloud_logger.error(f"Error processing {file_path}: {e}")
         raise
 
@@ -68,6 +71,7 @@ def process_voice_call_data(file_path, product, source):
             cloud_logger.warning(f"Error processing column '{col}' for date format: {e}")
 
     if not date_column:
+        publish_message("Error: No date column identified. Date column required for processing")
         cloud_logger.warning("No date column identified.")
 
     feedback_column = None
@@ -80,6 +84,7 @@ def process_voice_call_data(file_path, product, source):
     if feedback_column:
         data = data[data[feedback_column].apply(lambda x: pd.notna(x) and is_english(x))]
     else:
+        publish_message("Error: No feedback column identified.Feedback column is required for processing.")
         cloud_logger.warning("No feedback column identified.")
         raise ValueError("Feedback column is required for processing.")
 
@@ -116,14 +121,4 @@ def process_voice_call_data(file_path, product, source):
     data = data.reindex(columns=desired_columns)
 
     return data
-
-    ##TODO: Append to SQL
-
-    # output_file_path = f'/path/to/output/Transformed_{product}_{source}_Voice_Data.csv'
-    # try:
-    #     data.to_csv(output_file_path, index=False)
-    #     cloud_logger.info(f"Data transformation complete. File saved to: {output_file_path}")
-    # except Exception as e:
-    #     cloud_logger.error(f"Error saving transformed data: {e}")
-    #     raise
 

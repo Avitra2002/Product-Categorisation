@@ -2,6 +2,7 @@ from google.cloud import secretmanager
 from google.cloud import storage
 from psycopg2 import sql, extras
 import psycopg2
+# from pubsub_helper import publish_message
 
 import os
 import vertexai
@@ -62,6 +63,7 @@ def execute_postgres_query(db_user, db_password, db_name, db_host, query, data=N
     
     except psycopg2.DatabaseError as e:
         # Handle database related errors
+        # publish_message(f"Database error: {e}")
         print(f"Database error: {e}")
         if conn:
             conn.rollback()  # Rollback the transaction on error
@@ -69,6 +71,7 @@ def execute_postgres_query(db_user, db_password, db_name, db_host, query, data=N
     
     except Exception as e:
         # Handle other general errors
+        # publish_message(f"An unexpected error occurred: {e}")
         print(f"An unexpected error occurred: {e}")
     
     finally:
