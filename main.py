@@ -33,10 +33,12 @@ from  Functions.survey_problem_solution import process_survey_data
 from Functions.five_Star_Review import process_five_star_reviews
 from Functions.social_media import process_social_media_data
 from Functions.voice_call import process_voice_call_data
+import logging
 
 ##event and context is passed by google bucket
 def process_data(event,context):
     print("Script started")
+    # cloud_logger.info(f"Context: {context}")
     init_vertex_ai()
 
     project_id = '903333611831'
@@ -48,15 +50,24 @@ def process_data(event,context):
     # Retrieve secrets
     db_user = access_secret_version(db_user_secret_id, project_id)
     db_password = access_secret_version(db_password_secret_id, project_id)
+    print("Secrets retrieved successfully")
+    print (f'DB_USER: {db_user}, DB_PASSWORD:{db_password}')
 
     ##Get info from trigger in bucket
-    bucket_name = event['bucket']
-    file_name = event['name']
+    file = event
+    file_name= file["name"]
+    bucket_name=file['bucket']
+
+    # content_type = event['data']['contentType']
+    # time_created = event['data']['timeCreated']
+    print(f"File: {file_name}, Bucket: {bucket_name}")
+
     
     # Download the file from Google Cloud Storage
-    local_file_path = download_file_from_bucket(storage_bucket_name, file_name)
+    local_file_path = download_file_from_bucket(bucket_name, file_name)
+
     # local_file_path='/Users/phonavitra/Desktop/term 5/Service Studio/Test/Others__Social Media__smalltest.csv'
-    product, source=parse_filename(local_file_path)
+    product, source=parse_filename(file_name)
 
     # df = pd.read_csv(local_file_path)
 
@@ -75,22 +86,26 @@ def process_data(event,context):
 
     # Insert processed data into PostgreSQL
     # Prepare the data for insertion
-    data_to_insert = [
-    (
-        row['Date'], 
-        row['Feedback'], 
-        row['Product'], 
-        row['Subcategory'], 
-        row['Feedback Category'], 
-        row['Sentiment'], 
-        row['Sentiment Score'], 
-        row['Source']
-    )
-    for row in data
-    ]
+    if isinstance(data, pd.DataFrame) and not data.empty:
+        data_to_insert = [
+            (
+                row['Date'], 
+                row['Feedback'], 
+                row['Product'], 
+                row['Subcategory'], 
+                row['Feedback Category'], 
+                row['Sentiment'], 
+                row['Sentiment Score'], 
+                row['Source']
+            )
+            for index, row in data.iterrows()
+        ]
+    else:
+        logging.error("No data to process or data is not in expected format.")
+        return
 
-    query = """INSERT INTO test_dataprocessing (date, feedback, product, subcategory, feedback_category, sentiment, sentiment_score, sourc) VALUES %s"""
-    execute_postgres_query(db_user, db_password, 'feedback_db', '/cloudsql/jbaaam:asia-southeast1:feedback', query)
+    query = """INSERT INTO test_dataprocessing (date, feedback, product, subcategory, feedback_category, sentiment, sentiment_score, source) VALUES %s"""
+    execute_postgres_query(db_user, db_password, 'feedback_db', '/cloudsql/jbaaam:asia-southeast1:feedback', query,data_to_insert)
     
     # Delete the temporary file
     os.remove(local_file_path)
