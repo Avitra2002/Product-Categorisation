@@ -1,0 +1,5 @@
+functions-framework==3.*
+google-cloud-storage
+pandas
+vertexai
+openpyxl
