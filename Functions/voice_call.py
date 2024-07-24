@@ -65,7 +65,7 @@ def process_voice_call_data(file_path, product, source):
             if data[col].apply(lambda x: isinstance(x, str) and '/' in x).all():
                 data[col] = data[col].apply(format_date)
                 date_column = col
-                # cloud_logger.info(f"Date column identified and formatted: {col}")
+                cloud_logger.info(f"Date column identified and formatted: {col}")
                 break
         except Exception as e:
             cloud_logger.warning(f"Error processing column '{col}' for date format: {e}")
