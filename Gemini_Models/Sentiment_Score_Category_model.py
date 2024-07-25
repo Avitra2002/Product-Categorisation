@@ -31,7 +31,7 @@ Follow these specific instructions to process the text:
 
     - 3.6 to 4.5: \'Satisfied\': Customers are generally pleased and feel their expectations have been met. They are likely to recommend the product or service, acknowledging some minor flaws.
 
-    - 4.6 to 5.0: \'Excited\': Shows high enthusiasm and exceeded expectations. Customers actively promote the product or service, sharing positive experiences and recommending it highly.5. Provide a detailed description of the sentiment.
+    - 4.6 to 5.0: \'Promoter\': Shows high enthusiasm and exceeded expectations. Customers actively promote the product or service, sharing positive experiences and recommending it highly.5. Provide a detailed description of the sentiment.
 6. If the feedback does not give you any sentiment value and you need addition context, then it belongs to the Neutral Category.
 7. Ensure the output is formatted in a valid JSON with sentiment_score, sentiment_category, sentiment_description only
 </INSTRUCTIONS>
