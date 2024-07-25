@@ -21,15 +21,17 @@ generation_config = GenerationConfig(
 
 def generate_actionable_items(df):
     product_feedback = defaultdict(list)
+    feedback_categories = defaultdict(list)
     for _, row in df.iterrows():
         product_feedback[row['Subcategory']].append(row['Feedback'])
+        feedback_categories[row['Subcategory']].append(row['Feedbackcategory'])
 
     summarized_actions = []
     ##TODO: ADD IN FEEDBACK CATGEORY AS WELL
 
-    for product, feedbacks in product_feedback.items():
+    for product, feedback_categories, feedbacks in product_feedback.items():
         combined_feedback = " | ".join(feedbacks)
-
+        combined_feedback_category = " | ".join(feedback_categories[product])
         prompt = f"""
         Product: {product}
         Combined Feedback: {combined_feedback}
@@ -83,7 +85,7 @@ def generate_actionable_items(df):
             'feedback_data': feedbacks, ## a list ['x','y'] of entries
             'status': 'New',
             ##TODO: ADD IN FEEDBACK CATEGORY
-            'feedback_category': ''
+            'feedback_category': combined_feedback_category
             
         }
         for line in lines:
