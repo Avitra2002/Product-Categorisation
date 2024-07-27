@@ -22,16 +22,20 @@ generation_config = GenerationConfig(
 def generate_actionable_items(df):
     product_feedback = defaultdict(list)
     feedback_categories = defaultdict(list)
+    
     for _, row in df.iterrows():
         product_feedback[row['Subcategory']].append(row['Feedback'])
         feedback_categories[row['Subcategory']].append(row['Feedbackcategory'])
 
     summarized_actions = []
-    ##TODO: ADD IN FEEDBACK CATGEORY AS WELL
 
-    for product, feedback_categories, feedbacks in product_feedback.items():
+    for product in product_feedback:
+        feedbacks = product_feedback[product]
+        categories = feedback_categories[product]
+
         combined_feedback = " | ".join(feedbacks)
-        combined_feedback_category = " | ".join(feedback_categories[product])
+        combined_feedback_category = " | ".join(categories)
+
         prompt = f"""
         Product: {product}
         Combined Feedback: {combined_feedback}
@@ -56,7 +60,7 @@ def generate_actionable_items(df):
 
         Examples of generalized actions for various products:
         1. Savings Account: "Enhance interest rates and account features to improve customer satisfaction"
-        2. Mobile Banking App: "Prioritize app stability and user interface improvements based on customer feedback"
+        2. Mobile Banking App: "Prioritise app stability and user interface improvements based on customer feedback"
         3. Credit Cards: "Revamp reward program and address common billing concerns"
         4. Customer Service: "Implement comprehensive training program to address recurring customer issues"
         5. Loans: "Streamline application process and improve communication throughout the loan lifecycle"
@@ -82,11 +86,9 @@ def generate_actionable_items(df):
             'actionable_category': actionable_category,
             'action': action,
             'feedback_count': len(feedbacks),
-            'feedback_data': feedbacks, ## a list ['x','y'] of entries
+            'feedback_data': feedbacks,  # Store as list
             'status': 'New',
-            ##TODO: ADD IN FEEDBACK CATEGORY
-            'feedback_category': combined_feedback_category
-            
+            'feedback_category': categories  # Store as list
         }
         for line in lines:
             line = line.strip()
@@ -101,6 +103,7 @@ def generate_actionable_items(df):
             print(f"Warning: Incomplete response for product '{product}'. Response text: {response_text}")
 
     return json.dumps(summarized_actions, indent=4)
+
 
 @functions_framework.http
 def generate_actions(request):
