@@ -5,7 +5,9 @@ from collections import defaultdict
 import json
 import re
 import functions_framework
-from Actionables_Cloud_Function.auth import access_secret_version, execute_postgres_query, init_vertex_ai, fetch_data
+from auth import access_secret_version, execute_postgres_query, init_vertex_ai, fetch_data
+from datetime import datetime
+
 
 # Initialize Vertex AI
 project_id = "jbaaam"
@@ -21,14 +23,20 @@ generation_config = GenerationConfig(
 
 def generate_actionable_items(df):
     product_feedback = defaultdict(list)
+    feedback_categories = defaultdict(list)
+    
     for _, row in df.iterrows():
         product_feedback[row['Subcategory']].append(row['Feedback'])
+        feedback_categories[row['Subcategory']].append(row['Feedback Category'])
 
     summarized_actions = []
-    ##TODO: ADD IN FEEDBACK CATGEORY AS WELL
 
-    for product, feedbacks in product_feedback.items():
-        combined_feedback = " | ".join(feedbacks)
+    for product in product_feedback:
+        feedbacks = product_feedback[product]
+        categories = feedback_categories[product]
+
+        combined_feedback = " | ".join([fb for fb in feedbacks if fb is not None])
+        combined_feedback_category = " | ".join(categories)
 
         prompt = f"""
         Product: {product}
@@ -54,7 +62,7 @@ def generate_actionable_items(df):
 
         Examples of generalized actions for various products:
         1. Savings Account: "Enhance interest rates and account features to improve customer satisfaction"
-        2. Mobile Banking App: "Prioritize app stability and user interface improvements based on customer feedback"
+        2. Mobile Banking App: "Prioritise app stability and user interface improvements based on customer feedback"
         3. Credit Cards: "Revamp reward program and address common billing concerns"
         4. Customer Service: "Implement comprehensive training program to address recurring customer issues"
         5. Loans: "Streamline application process and improve communication throughout the loan lifecycle"
@@ -79,12 +87,10 @@ def generate_actionable_items(df):
             'subproduct': product,
             'actionable_category': actionable_category,
             'action': action,
-            'feedback_count': len(feedbacks),
-            'feedback_data': feedbacks, ## a list ['x','y'] of entries
+            # 'feedback_count': len(feedbacks),
+            'feedback_json': feedbacks,  # Store as list
             'status': 'New',
-            ##TODO: ADD IN FEEDBACK CATEGORY
-            'feedback_category': ''
-            
+            'feedback_category': categories,  # Store as list
         }
         for line in lines:
             line = line.strip()
@@ -100,12 +106,14 @@ def generate_actionable_items(df):
 
     return json.dumps(summarized_actions, indent=4)
 
+
 @functions_framework.http
 def generate_actions(request):
-    source = request.args.get('source')
+    source = request.args.getlist('source')
     to_date = request.args.get('to_date')
     from_date = request.args.get('from_date')
-    product = request.args.get('product')
+    product = request.args.getlist('product')
+    print(f'request from http. Source:{source}, To Date: {to_date}, From Date: {from_date}, product: {product}')
 
     project_id = '903333611831'
     
@@ -119,24 +127,32 @@ def generate_actions(request):
     db_name='feedback_db'
 
     df= fetch_data(db_user, db_password, db_name, db_host,source, from_date, to_date, product)
+    
+    if df.empty:
+        print("No data fetched. Exiting without generating actionables.")
+        return json.dumps({"message": "No data available to process actionables"}), 200
+    else:
+        print(df.head())
 
     action_items_json = generate_actionable_items(df)
+    print("Actionable Model completed")
     action_items = json.loads(action_items_json)
 
     # Insert the actionable items into the database
     data_to_insert = [
         (
+            item['action'],
+            item['status'], 
             item['subproduct'], 
             item['actionable_category'], 
-            item['action'], 
-            item['feedback_count'], 
-            item['feedback_data'],  # json.dumps(item['feedback_data']) if the schema is json
-            item['status'], 
-            item['feedback_cat']
+            json.dumps(item['feedback_category']),
+            # item['feedback_count'], 
+            json.dumps(item['feedback_json']),  # item['feedback_data'] if the schema is list
+            datetime.now(),
+            datetime.now()
         ) for item in action_items
     ]
     
-    ##TODO: configure actionables table in the db
     """actioanbles table
         CREATE TABLE actionables (
             id SERIAL PRIMARY KEY,
@@ -144,16 +160,15 @@ def generate_actions(request):
             actionable_category TEXT,
             action TEXT,
             feedback_count INTEGER,
-            feedback_data TEXT[], -- Storing list of text / if json then JSON
+            feedback_data JSON, -- Storing list of text / if json then JSON
             status TEXT,
-            feedback_category TEXT
+            feedback_category JSON
     );"""
 
     insert_query = """
-    INSERT INTO actionables (subproduct, actionable_category, action, feedback_count, feedback_data, status, feedback_category)
-    VALUES (%s, %s, %s, %s, %s, %s, %s);
+    INSERT INTO actionables (action, status, subproduct, actionable_category, feedback_category, feedback_json,created_at,updated_at)
+    VALUES %s;
     """
     execute_postgres_query(db_user, db_password, db_name, db_host, insert_query, data_to_insert)
 
     return json.dumps({"message": "Actionable items processed and stored successfully"}, indent=4), 200
-

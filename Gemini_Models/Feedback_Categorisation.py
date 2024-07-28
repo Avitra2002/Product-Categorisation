@@ -24,9 +24,9 @@ def feedback_categorisation(text,product):
   Here are the products mapped to their associated Feedback Categories: 
   - Debit Card: ['Statement', 'Card Delivery', 'Card Application', 'Card Activation', 'Cashback', 'Rewards', 'Card Replacement', 'Card Renewal', 'Charges/Fees & Interest', 'Card Limit', 'Scam/Fraud', 'Staff related', 'Technical/System Related', 'T&C', 'Card Blocked']
   - Credit Card: ['Statement', 'Card Delivery', 'Card Application', 'Card Activation', 'Cashback', 'Rewards', 'Card Replacement', 'Card Renewal', 'Charges/Fees & Interest', 'Card Limit', 'Scam/Fraud', 'Staff related', 'Credit Application', 'Credit Limit', 'Supplementary Credit Card', 'Fee Waiver']
-  - Personal Loan: ['Loan Settlement', 'Loan Application', 'Process Related', 'Charges/Fees & Interest', 'Loan Disbursement', 'Technical Issue/System Related', 'Credit Loan', 'Staff Related', 'GIRO auto deduction']
-  - Cashline: ['Loan Settlement', 'Loan Application', 'Process Related', 'Charges/Fees & Interest', 'Loan Disbursement', 'Technical Issue/System Related', 'Credit Loan', 'Staff Related', 'GIRO auto deduction']
-  - Education Loan (Tuition Fee Loan): ['Loan Settlement', 'Loan Application', 'Process Related', 'Charges/Fees & Interest', 'Loan Disbursement', 'Technical Issue', 'Credit Loan', 'Staff Related', 'GIRO auto deduction']
+  - Personal Loan: ['Loan Settlement', 'Loan Application', 'Process Related', 'Charges/Fees & Interest', 'Loan Disbursement', 'Technical/System Related', 'Credit Loan', 'Staff Related', 'GIRO auto deduction']
+  - Cashline: ['Loan Settlement', 'Loan Application', 'Process Related', 'Charges/Fees & Interest', 'Loan Disbursement', 'Technical/System Related', 'Credit Loan', 'Staff Related', 'GIRO auto deduction']
+  - Education Loan (Tuition Fee Loan): ['Loan Settlement', 'Loan Application', 'Process Related', 'Charges/Fees & Interest', 'Loan Disbursement', 'Technical/System Related', 'Credit Loan', 'Staff Related', 'GIRO auto deduction']
   - Renovation Loan: ['Loan Settlement', 'Loan Application', 'Process Related', 'Charges/Fees & Interest', 'Loan Disbursement', 'Technical/System Related', 'Staff Related', 'GIRO auto deduction']
   - Mortgage/Home Loan: ['Loan Settlement', 'Loan Application', 'Process Related', 'Charges/Fees & Interest', 'Loan Disbursement', 'Technical/System Related',  'Staff Related', 'GIRO auto deduction']
   - Car Loan: ['Loan Settlement', 'Loan Application', 'Process Related', 'Charges/Fees & Interest', 'Loan Disbursement', 'Technical/System Related', 'Staff Related', 'GIRO auto deduction']

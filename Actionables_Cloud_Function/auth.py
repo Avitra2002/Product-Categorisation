@@ -6,6 +6,7 @@ from psycopg2 import sql, extras
 import psycopg2
 import os
 import pandas as pd
+import psycopg2.extras
 
 # # Path to your service account key
 # key_path = "/Users/joel/Downloads/jbaaam-060272bd3d02.json"  # Update this path
@@ -104,26 +105,34 @@ def fetch_data(db_user, db_password, db_name, db_host,source, from_date, to_date
         
         cursor = conn.cursor()
 
+        if not source or not product:
+            print("Source or Product list is empty.")
+            return pd.DataFrame()  # Return an empty DataFrame if source or product is empty
+        
         query = """
-            SELECT * FROM feedback_data
-            WHERE source = %s AND product = %s AND date BETWEEN %s AND %s;
-            """
+            SELECT * FROM analytics
+            WHERE source = ANY(%s)
+            AND product = ANY(%s)
+            AND date BETWEEN %s AND %s;
+        """
         
         cursor.execute(query, (source, product, from_date, to_date))
+        
         rows = cursor.fetchall()
         df = pd.DataFrame(rows, columns=['Date', 'Feedback', 'Product', 'Subcategory', 'Feedback Category', 'Sentiment', 'Sentiment Score', 'Source']) 
+        
         return df
+
     except Exception as e:
-        # Handle other general errors
-        # publish_message(f"An unexpected error occurred: {e}")
         print(f"Failed to fetch: {e}")
-    
+
     finally:
-        # Close the cursor and the connection
         if cursor:
             cursor.close()
         if conn:
             conn.close()
         print("Database connection closed.")
+
+
         
 
