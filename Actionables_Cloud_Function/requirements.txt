@@ -8,3 +8,4 @@ google-cloud-secret-manager
 google-cloud-storage
 psycopg2-binary
 google-cloud-aiplatform
+google-cloud-firestore

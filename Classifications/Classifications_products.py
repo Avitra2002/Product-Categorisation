@@ -17,7 +17,7 @@ product_dict = {
     "Digital Channels": ["DigiBank App", "Internet Banking(iBanking)", "Paylah!"],
     "Investments": ["digiPortfolio", "Non-Unit Trust/Equities", "Unit Trust", "Vickers"],
     "DBS Treasures": ["Treasures Relationship Manager(RM)", "DBS Wealth Planning Manager", "DBS Treasures (General)"],
-    "Self-Service Banking": ["SSB", "VTM(Video Teller Machine)", "Phone Banking", "Coin Deposit Machine"],
+    "Self-Service Banking": ["SSB", "VTM(Video Teller Machine)", "Phone Banking", "Coin Deposit Machine","SSB (Self-Service Banking)"],
     "Insurance": ["General Insurance", "Life Insurance"],
     "Deposits": ["DBS Deposit Account", "Payments", "PayNow", "Cheque", "GIRO", "digiVault"],
     "Contact Center": ["DBS Hotline", "DBS Branches/Staff","Contact Center"],

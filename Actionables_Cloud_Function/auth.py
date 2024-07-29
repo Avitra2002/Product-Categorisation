@@ -110,7 +110,7 @@ def fetch_data(db_user, db_password, db_name, db_host,source, from_date, to_date
             return pd.DataFrame()  # Return an empty DataFrame if source or product is empty
         
         query = """
-            SELECT * FROM analytics
+            SELECT * FROM test_dataprocessing
             WHERE source = ANY(%s)
             AND product = ANY(%s)
             AND date BETWEEN %s AND %s;
