@@ -2,6 +2,8 @@ import pytest
 from unittest.mock import patch
 import sys
 from Data_processing_cloud.clear_logs import clear_logs
+import os
+
 
 # TC9
 @patch('Data_processing_cloud.clear_logs.execute_postgres_query')
