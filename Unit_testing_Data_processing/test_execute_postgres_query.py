@@ -28,7 +28,7 @@ def test_execute_postgres_query_success(mock_publish_message, mock_connect):
 #TC14
 @patch('psycopg2.connect', side_effect=psycopg2.DatabaseError("DB error"))
 @patch('Data_processing_cloud.authentification.publish_message')
-def test_execute_postgres_query_unexpected_error(mock_publish_message, mock_connect):
+def test_execute_postgres_query_DB_error(mock_publish_message, mock_connect):
     # Setup the mock objects
     mock_conn = Mock()
     mock_cursor = Mock()
