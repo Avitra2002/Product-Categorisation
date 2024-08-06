@@ -52,3 +52,35 @@ def test_unexpected_error_exit(mock_publish_message, mock_connect):
 
     assert excinfo.value.code == 1
     mock_publish_message.assert_called_once_with("An unexpected error occurred: Unexpected error", 'ERROR')
+
+@patch('psycopg2.connect')
+def test_get_latest_log_status_empty_result(mock_connect):
+    mock_cursor = Mock()
+    mock_cursor.fetchone.return_value = None
+    mock_connect.return_value.cursor.return_value = mock_cursor
+
+    status = get_latest_log_status('user', 'password', 'host', 'dbname')
+    assert status is None
+
+
+@patch('psycopg2.connect', side_effect=psycopg2.OperationalError("Connection timeout"))
+@patch('Data_processing_cloud.check_logs.publish_message')
+def test_connection_timeout_error(mock_publish_message, mock_connect):
+    with pytest.raises(SystemExit) as excinfo:
+        get_latest_log_status('user', 'password', 'host', 'dbname')
+
+    assert excinfo.value.code == 1
+    mock_publish_message.assert_called_once_with("Database error: Connection timeout", 'ERROR')
+
+
+@patch('psycopg2.connect')
+def test_get_latest_log_status_empty_result(mock_connect):
+    mock_cursor = Mock()
+    mock_cursor.fetchone.return_value = None
+    mock_connect.return_value.cursor.return_value = mock_cursor
+
+    status = get_latest_log_status('user', 'password', 'host', 'dbname')
+    assert status is None
+
+
+    
