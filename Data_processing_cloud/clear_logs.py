@@ -13,4 +13,5 @@ def clear_logs(db_user, db_password, db_host, db_name):
     except Exception as e:
         publish_message(f"Failed to clear logs: {e}",'ERROR')
         print(f"Failed to clear logs: {e}")
+        print("Database transaction rolled back due to an error.")
         sys.exit(1)

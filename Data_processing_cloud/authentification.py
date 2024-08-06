@@ -100,9 +100,9 @@ def execute_postgres_query(db_user, db_password, db_name, db_host, query, data=N
 #     cursor.close()
 #     conn.close()
 
-def init_vertex_ai():
-    # Initialize Vertex AI
-    os.environ["GOOGLE_CLOUD_PROJECT"] = "903333611831"
-    vertexai.init(project="903333611831", location="asia-southeast1") ##for Subcategory Classification Model
-    vertexai.init(project="jbaaam", location="us-central1") ##for sentiment analysis model
+# def init_vertex_ai():
+#     # Initialize Vertex AI
+#     os.environ["GOOGLE_CLOUD_PROJECT"] = "903333611831"
+#     vertexai.init(project="903333611831", location="asia-southeast1") ##for Subcategory Classification Model
+#     vertexai.init(project="jbaaam", location="us-central1") ##for sentiment analysis model
 

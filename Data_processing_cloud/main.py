@@ -31,7 +31,7 @@ def parse_filename(file_path):
 # Cloud Function entry point
 import os
 import pandas as pd
-from Data_processing_cloud.authentification import access_secret_version, download_file_from_bucket, execute_postgres_query, init_vertex_ai
+from Data_processing_cloud.authentification import access_secret_version, download_file_from_bucket, execute_postgres_query
 from  Data_processing_cloud.Functions.survey_problem_solution import process_survey_data
 from Data_processing_cloud.Functions.five_Star_Review import process_five_star_reviews
 from Data_processing_cloud.Functions.social_media import process_social_media_data
@@ -39,12 +39,15 @@ from Data_processing_cloud.Functions.voice_call import process_voice_call_data
 import logging
 from Data_processing_cloud.clear_logs import clear_logs
 from Data_processing_cloud.check_logs import get_latest_log_status 
+import vertexai
 
 ##event and context is passed by google bucket
 def process_data(event,context):
     print("Script started")
     # cloud_logger.info(f"Context: {context}")
-    init_vertex_ai()
+    os.environ["GOOGLE_CLOUD_PROJECT"] = "903333611831"
+    vertexai.init(project="903333611831", location="asia-southeast1") ##for Subcategory Classification Model
+    vertexai.init(project="jbaaam", location="us-central1") ##for sentiment analysis model
 
     project_id = '903333611831'
     
