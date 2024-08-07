@@ -27,29 +27,17 @@ product_dict = {
     "Others": ["Others"]
 }
 
-# def classify_subcategory_batch(texts, batch_size=60, delay_per_batch=8):
-#     subcategories = []
-#     for i in range(0, len(texts), batch_size):
-#         batch = texts[i:i+batch_size]
-#         batch_subcategories = [classify_subcategory(text) for text in batch]
-#         subcategories.extend(batch_subcategories)
-#         if i + batch_size < len(texts):  # To avoid sleeping after the last batch
-#             time.sleep(delay_per_batch)  # Wait before processing the next batch
-#     return subcategories
-
-
-def classification_defined_products(df):
-
-    ##categorise into subproducts - ALREADY CLASSIFIED FROM FILTER
-    # df['Subcategory'] = classify_subcategory_batch(df['Feedback'].tolist())
-
-    # Link subproducts to products
-    def match_product(subcategory):
+def match_product(subcategory):
         for product, subproducts in product_dict.items():
             if subcategory in subproducts:
                 return product
         return 'Others'  # Return 'Others' if subcategory doesn't match any product
     
+
+def classification_defined_products(df):
+
+
+    # Link subproducts to products
     
     try: 
         df['Product'] = df['Subcategory'].apply(match_product)
@@ -77,4 +65,5 @@ def classification_defined_products(df):
     except Exception as e:
         print(f"An error occurred: {e}")
         publish_message(f"Error - Operation could not be completed: {e}", 'ERROR')
+        return None
 
