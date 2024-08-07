@@ -41,8 +41,17 @@ import logging
 
 def classification_defined_products(df):
     import os
+    import pandas as pd
     os.environ["GOOGLE_CLOUD_PROJECT"] = "903333611831"
     logging.basicConfig(level=logging.INFO)
+
+    if df.empty:
+        return pd.DataFrame(columns=['Feedback', 'Date', 'Subcategory', 'Product', 'Feedback Category', 'Sentiment Score', 'Sentiment'])
+    
+    required_columns = ['Feedback', 'Date', 'Subcategory']
+    missing_columns = [col for col in required_columns if col not in df.columns]
+    if missing_columns:
+        raise ValueError(f"Missing required columns: {', '.join(missing_columns)}")
 
     if df['Subcategory'].isnull().any() or df['Feedback'].isnull().any() or df['Subcategory'].eq('').any() or df['Feedback'].eq('').any():
         error_message = "Subcategory or Feedback contains None or empty values."
@@ -52,7 +61,7 @@ def classification_defined_products(df):
 
     try: 
         logging.info("Starting Subcategory Categorisation")
-        df['Product'] = df['Subcategory'].apply(match_product)
+        df['Product'] = df['Subcategory'].apply(lambda x: print(f"Applying to {x}: {match_product(x)}") or match_product(x))
         publish_message('Completed Subcategory Categorisation', 'IN PROGRESS')
         logging.info("Completed: Subcategory Categorisation")
 
@@ -62,7 +71,7 @@ def classification_defined_products(df):
         logging.info("Completed: Feedback Categorisation")
 
         logging.info("Starting Sentiment Analysis")
-        sentiment_results = df['Feedback'].apply(classify_sentiment)
+        sentiment_results = df['Feedback'].apply(lambda x: print(f"Analyzing sentiment for: {x}") or classify_sentiment(x))
         df['Sentiment Score'], df['Sentiment'] = zip(*sentiment_results)
         publish_message('Completed Sentiment Analysis', "IN PROGRESS")
         logging.info("Completed: Sentiment Analysis")
@@ -76,3 +85,49 @@ def classification_defined_products(df):
         publish_message(f"Error - Operation could not be completed: {e}", 'ERROR')
         return None
 
+
+# def classification_defined_products(df):
+#     import os
+#     os.environ["GOOGLE_CLOUD_PROJECT"] = "903333611831"
+#     logging.basicConfig(level=logging.INFO)
+#     print("Initial DataFrame:")
+#     print(df)
+    
+#     if df.empty:
+#         return pd.DataFrame(columns=['Feedback', 'Date', 'Subcategory', 'Product', 'Feedback Category', 'Sentiment Score', 'Sentiment'])
+
+#     required_columns = ['Feedback', 'Date', 'Subcategory']
+#     missing_columns = [col for col in required_columns if col not in df.columns]
+#     if missing_columns:
+#         raise ValueError(f"Missing required columns: {', '.join(missing_columns)}")
+#     if df['Subcategory'].isnull().any() or df['Feedback'].isnull().any() or df['Subcategory'].eq('').any() or df['Feedback'].eq('').any():
+#         error_message = "Subcategory or Feedback contains None or empty values."
+#         logging.error(error_message)
+#         publish_message(f"Error - Operation could not be completed: {error_message}", 'ERROR')
+#         return None
+#     try:
+#         df['Product'] = df['Subcategory'].apply(lambda x: print(f"Applying to {x}: {match_product(x)}") or match_product(x))
+#         publish_message('Completed Subcategory Categorisation', 'IN PROGRESS')
+
+#         print('Completed: Subcategory Categorisation')
+
+#         publish_message('Feedback Categorisation in progress','IN PROGRESS')
+#         # This line should be inside the try block
+#         df['Feedback Category'] = df.apply(lambda row: feedback_categorisation(row['Feedback'], row['Subcategory']), axis=1)
+#         publish_message('Completed Feedback Categorisation', "IN PROGRESS")
+#         print("Completed: Feedback")
+        
+#         print('Completed: Feedback Categorisation')
+
+#         publish_message('Sentiment Analysis in progress', 'IN PROGRESS')
+#         sentiment_results = df['Feedback'].apply(lambda x: print(f"Analyzing sentiment for: {x}") or classify_sentiment(x))
+#         df['Sentiment Score'], df['Sentiment'] = zip(*sentiment_results)
+#         publish_message('Completed Sentiment Analysis', "IN PROGRESS")
+#         print("Completed: Sentiment")
+
+#         return df
+
+#     except Exception as e:
+#         print(f"An error occurred: {e}")
+#         publish_message(f"Error - Operation could not be completed: {e}", 'ERROR')
+#         return None
