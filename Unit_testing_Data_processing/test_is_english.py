@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import patch
 from langdetect.lang_detect_exception import LangDetectException
-from Data_processing_cloud.Functions.is_english import is_english  # Replace 'your_module' with the actual module name where the function is defined
+from Data_processing_cloud.Functions.is_english import is_english 
 
 def test_is_english_valid():
     with patch('Data_processing_cloud.Functions.is_english.detect') as mock_detect:
