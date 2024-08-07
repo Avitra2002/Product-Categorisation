@@ -37,26 +37,6 @@ product_dict = {
 #             time.sleep(delay_per_batch)  # Wait before processing the next batch
 #     return subcategories
 
-def classify_sentiment_batch(texts, batch_size=60, delay_per_batch=8):
-    sentiments = []
-    for i in range(0, len(texts), batch_size):
-        batch = texts[i:i+batch_size]
-        batch_sentiments = [classify_sentiment(text) for text in batch]
-        sentiments.extend(batch_sentiments)
-        if i + batch_size < len(texts):  
-            time.sleep(delay_per_batch)
-    return sentiments
-
-def classify_feedback_batch(feedbacks, products, batch_size=60, delay_per_batch=8):
-    categories = []
-    for i in range(0, len(feedbacks), batch_size):
-        batch_feedbacks = feedbacks[i:i+batch_size]
-        batch_products = products[i:i+batch_size]
-        batch_categories = [feedback_categorisation(feedback, product) for feedback, product in zip(batch_feedbacks, batch_products)]
-        categories.extend(batch_categories)
-        if i + batch_size < len(feedbacks):  # To avoid sleeping after the last batch
-            time.sleep(delay_per_batch)  # Wait before processing the next batch
-    return categories
 
 def classification_defined_products(df):
 
@@ -79,18 +59,18 @@ def classification_defined_products(df):
 
         publish_message('Feedback Categorisation in progress','IN PROGRESS')
         ##categorise into feedback sentiment
-        df['Feedback Category'] = classify_feedback_batch(df['Feedback'].tolist(), df['Subcategory'].tolist())
-        publish_message('Completed Feedback Categorisation', 'IN PROGRESS')
+        df['Feedback Category'] = df.apply(lambda row: feedback_categorisation(row['Feedback'], row['Subcategory']), axis=1)
+        publish_message('Completed Feedback Categorisation', "IN PROGRESS")
+        print("Completed: Feedback")
         
         print('Completed: Feedback Categorisation')
 
         ## categorise sentiment and score
-        publish_message('Sentiment Analysis in progress','IN PROGRESS')
-        sentiment_results = classify_sentiment_batch(df['Feedback'].tolist())
+        publish_message('Sentiment Analysis in progress', 'IN PROGRESS')
+        sentiment_results = df['Feedback'].apply(classify_sentiment)
         df['Sentiment Score'], df['Sentiment'] = zip(*sentiment_results)
-        publish_message('Completed Sentiment Analysis', 'IN PROGRESS')
-
-        print('Completed: Sentiment')
+        publish_message('Completed Sentiment Analysis', "IN PROGRESS")
+        print("Completed: Sentiment")
 
         return df
     
