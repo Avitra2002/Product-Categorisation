@@ -10,7 +10,8 @@ from google.api_core.exceptions import ResourceExhausted
 import time
 
 def classify_sentiment(text):
-    # vertexai.init(project="jbaaam", location="us-central1")
+    vertexai.init(project="jbaaam", location="us-central1")
+    
 
     # Define the system instruction text for sentiment analysis
     system_instruction= """

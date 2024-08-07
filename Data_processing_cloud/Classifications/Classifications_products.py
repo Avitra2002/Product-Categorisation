@@ -27,74 +27,52 @@ product_dict = {
     "Others": ["Others"]
 }
 
-# def classify_subcategory_batch(texts, batch_size=60, delay_per_batch=8):
-#     subcategories = []
-#     for i in range(0, len(texts), batch_size):
-#         batch = texts[i:i+batch_size]
-#         batch_subcategories = [classify_subcategory(text) for text in batch]
-#         subcategories.extend(batch_subcategories)
-#         if i + batch_size < len(texts):  # To avoid sleeping after the last batch
-#             time.sleep(delay_per_batch)  # Wait before processing the next batch
-#     return subcategories
+def match_product(subcategory):
+    if not isinstance(subcategory, str):
+        # Log an error or handle it accordingly
+        return 'Others'
+    for product, subproducts in product_dict.items():
+        if subcategory in subproducts:
+            return product
+    return 'Others'
+    
 
-def classify_sentiment_batch(texts, batch_size=60, delay_per_batch=8):
-    sentiments = []
-    for i in range(0, len(texts), batch_size):
-        batch = texts[i:i+batch_size]
-        batch_sentiments = [classify_sentiment(text) for text in batch]
-        sentiments.extend(batch_sentiments)
-        if i + batch_size < len(texts):  
-            time.sleep(delay_per_batch)
-    return sentiments
-
-def classify_feedback_batch(feedbacks, products, batch_size=60, delay_per_batch=8):
-    categories = []
-    for i in range(0, len(feedbacks), batch_size):
-        batch_feedbacks = feedbacks[i:i+batch_size]
-        batch_products = products[i:i+batch_size]
-        batch_categories = [feedback_categorisation(feedback, product) for feedback, product in zip(batch_feedbacks, batch_products)]
-        categories.extend(batch_categories)
-        if i + batch_size < len(feedbacks):  # To avoid sleeping after the last batch
-            time.sleep(delay_per_batch)  # Wait before processing the next batch
-    return categories
+import logging
 
 def classification_defined_products(df):
+    import os
+    os.environ["GOOGLE_CLOUD_PROJECT"] = "903333611831"
+    logging.basicConfig(level=logging.INFO)
 
-    ##categorise into subproducts - ALREADY CLASSIFIED FROM FILTER
-    # df['Subcategory'] = classify_subcategory_batch(df['Feedback'].tolist())
+    if df['Subcategory'].isnull().any() or df['Feedback'].isnull().any() or df['Subcategory'].eq('').any() or df['Feedback'].eq('').any():
+        error_message = "Subcategory or Feedback contains None or empty values."
+        logging.error(error_message)
+        publish_message(f"Error - Operation could not be completed: {error_message}", 'ERROR')
+        return None  # Early exit with None to indicate processing failure due to invalid input
 
-    # Link subproducts to products
-    def match_product(subcategory):
-        for product, subproducts in product_dict.items():
-            if subcategory in subproducts:
-                return product
-        return 'Others'  # Return 'Others' if subcategory doesn't match any product
-    
-    
     try: 
+        logging.info("Starting Subcategory Categorisation")
         df['Product'] = df['Subcategory'].apply(match_product)
         publish_message('Completed Subcategory Categorisation', 'IN PROGRESS')
+        logging.info("Completed: Subcategory Categorisation")
 
-        print('Completed: Subcategory Categorisation')
+        logging.info("Starting Feedback Categorisation")
+        df['Feedback Category'] = df.apply(lambda row: feedback_categorisation(row['Feedback'], row['Subcategory']), axis=1)
+        publish_message('Completed Feedback Categorisation', "IN PROGRESS")
+        logging.info("Completed: Feedback Categorisation")
 
-        publish_message('Feedback Categorisation in progress','IN PROGRESS')
-        ##categorise into feedback sentiment
-        df['Feedback Category'] = classify_feedback_batch(df['Feedback'].tolist(), df['Subcategory'].tolist())
-        publish_message('Completed Feedback Categorisation', 'IN PROGRESS')
-        
-        print('Completed: Feedback Categorisation')
-
-        ## categorise sentiment and score
-        publish_message('Sentiment Analysis in progress','IN PROGRESS')
-        sentiment_results = classify_sentiment_batch(df['Feedback'].tolist())
+        logging.info("Starting Sentiment Analysis")
+        sentiment_results = df['Feedback'].apply(classify_sentiment)
         df['Sentiment Score'], df['Sentiment'] = zip(*sentiment_results)
-        publish_message('Completed Sentiment Analysis', 'IN PROGRESS')
+        publish_message('Completed Sentiment Analysis', "IN PROGRESS")
+        logging.info("Completed: Sentiment Analysis")
 
-        print('Completed: Sentiment')
+        
 
         return df
     
     except Exception as e:
-        print(f"An error occurred: {e}")
+        logging.error(f"An error occurred: {e}", exc_info=True)
         publish_message(f"Error - Operation could not be completed: {e}", 'ERROR')
+        return None
 
