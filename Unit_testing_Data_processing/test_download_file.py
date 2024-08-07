@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import patch, Mock
-from Data_processing_cloud.main import download_file_from_bucket
+from Data_processing_cloud.authentification import download_file_from_bucket
 
 #TC11
 @patch('Data_processing_cloud.authentification.storage.Client')

@@ -66,11 +66,11 @@ def execute_postgres_query(db_user, db_password, db_name, db_host, query, data=N
     except psycopg2.DatabaseError as e:
         # Handle database related errors
         print(f"Database error: {e}")
+        publish_message("Database transaction rolled back due to an error.",'ERROR')
         if conn:
             conn.rollback()  # Rollback the transaction on error
-            publish_message("Database transaction rolled back due to an error.",'ERROR')
             print("Database transaction rolled back due to an error.")
-            sys.exit(1)
+        sys.exit(1)
     
     except Exception as e:
         # Handle other general errors
