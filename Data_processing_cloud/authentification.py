@@ -10,6 +10,19 @@ import sys
 
 # Function to retrieve secret from Secret Manager
 def access_secret_version(secret_id, project_id):
+    """
+    The function `access_secret_version` retrieves the latest version of a secret from Google Cloud
+    Secret Manager.
+    
+    :param secret_id: The `secret_id` parameter is the identifier of the secret whose latest version you
+    want to access. It is a string that represents the name or ID of the secret stored in Google Cloud
+    Secret Manager
+    :param project_id: The `project_id` parameter is the unique identifier for the Google Cloud project
+    where the secret is stored. It is used to specify the project under which the secret is located when
+    accessing the secret version
+    :return: The function `access_secret_version` returns the decoded data from the payload of the
+    secret version accessed using the provided `secret_id` and `project_id`.
+    """
     client = secretmanager.SecretManagerServiceClient()
     name = f"projects/{project_id}/secrets/{secret_id}/versions/latest"
     response = client.access_secret_version(name=name)
